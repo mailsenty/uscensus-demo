@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:us-census-economic-indicator="http://www.mulesoft.org/schema/mule/us-census-economic-indicator" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/us-census-economic-indicator http://www.mulesoft.org/schema/mule/us-census-economic-indicator/current/mule-us-census-economic-indicator.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <http:listener-config name="HTTP_Listener_Configuration" host="0.0.0.0" port="8081" doc:name="HTTP Listener Configuration"/>
+    <us-census-economic-indicator:config name="USCensusEconomicIndicator__Configuration" doc:name="USCensusEconomicIndicator: Configuration"/>
+    <flow name="uscensusafterdemoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/censusafter" allowedMethods="GET" doc:name="HTTP"/>
+        <us-census-economic-indicator:after config-ref="USCensusEconomicIndicator__Configuration" fromyear="#[message.inboundProperties.'http.query.params'.year]" doc:name="USCensusEconomicIndicator"/>
+    </flow>
+    <flow name="uscensusbeforedemoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/censusbefore" allowedMethods="GET" doc:name="HTTP"/>
+        <us-census-economic-indicator:before config-ref="USCensusEconomicIndicator__Configuration" beforeyear="#[message.inboundProperties.'http.query.params'.year]" doc:name="USCensusEconomicIndicator"/>
+    </flow>
+    <flow name="uscensusbetweendemoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/censusbetween" allowedMethods="GET" doc:name="HTTP"/>
+        <us-census-economic-indicator:between config-ref="USCensusEconomicIndicator__Configuration" from="#[message.inboundProperties.'http.query.params'.from]"  doc:name="USCensusEconomicIndicator" to="#[message.inboundProperties.'http.query.params'.to]"/>
+    </flow>
+    <flow name="uscensusyeardemoFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/censusgetyear" allowedMethods="GET" doc:name="HTTP"/>
+        <us-census-economic-indicator:get config-ref="USCensusEconomicIndicator__Configuration"   doc:name="USCensusEconomicIndicator" year="#[message.inboundProperties.'http.query.params'.year]"/>
+    </flow>
+</mule>
